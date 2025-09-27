@@ -1,0 +1,60 @@
+.swappedCoinpage {
+  padding: 2rem;
+  background-color: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+  }
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: #222;
+  text-align: center;
+}
+
+.swapBox {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background: var(--gray);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+
+  @media (max-width: 400px) {
+    padding: 1.2rem;
+    gap: 1rem;
+  }
+}
+
+.selectInput,
+.amountInput {
+  .MuiInputBase-root {
+    border-radius: 12px;
+  }
+}
+
+.swapButton {
+  height: 45px;
+  font-weight: 600;
+  border-radius: 12px;
+  background-color: #1e40af;
+
+  &:hover {
+    background-color: #1e3a8a;
+  }
+
+  &:disabled {
+    background-color: #cbd5e1;
+    color: #475569;
+  }
+}

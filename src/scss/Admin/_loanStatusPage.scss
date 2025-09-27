@@ -1,0 +1,181 @@
+.loanstatus-bg {
+  background: #f4f4f4;
+  min-height: 100vh;
+}
+.loanstatus-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+.loanstatus-loading {
+  text-align: center;
+  padding: 3rem 0;
+  font-size: 1.2rem;
+  color: #d67a49;
+}
+.loanstatus-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(214, 122, 73, 0.06);
+  padding: 2rem 1rem;
+  overflow-x: auto;
+}
+.loanstatus-table {
+  width: 100%;
+  border-collapse: collapse;
+  th,
+  td {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-size: 0.97rem;
+  }
+  th {
+    background: #d67a49;
+    color: #fff;
+    font-weight: 700;
+    border: none;
+  }
+  tr {
+    border-bottom: 1px solid #f3e1d1;
+  }
+}
+.loanstatus-badge {
+  display: inline-block;
+  padding: 0.3em 1em;
+  border-radius: 18px;
+  font-weight: 600;
+  font-size: 0.96em;
+  &.pending {
+    background: #fff5d2;
+    color: #c8a200;
+  }
+  &.approved {
+    background: #e2f8e3;
+    color: #24bf61;
+  }
+  &.rejected {
+    background: #ffe3e3;
+    color: #d53a3a;
+  }
+  &.paid {
+    background: #edeafd;
+    color: #4734b3;
+  }
+}
+.loanstatus-wallet-balance {
+  margin-left: 0.4em;
+  color: #888;
+  font-size: 0.95em;
+}
+.loanstatus-action {
+  margin: 0 2px;
+  font-size: 0.95em;
+  padding: 0.2em 0.7em;
+  border-radius: 6px;
+  border: none;
+  background: #edeafd;
+  color: #5f4cee;
+  cursor: pointer;
+  transition: all 0.16s;
+  &:hover {
+    background: #d67a49;
+    color: #fff;
+  }
+}
+.loanstatus-approve {
+  background: #e2f8e3;
+  color: #24bf61;
+}
+.loanstatus-approve:hover {
+  background: #24bf61;
+  color: #fff;
+}
+.loanstatus-decline {
+  background: #ffe3e3;
+  color: #d53a3a;
+}
+.loanstatus-decline:hover {
+  background: #d53a3a;
+  color: #fff;
+}
+.loanstatus-edit {
+  background: #f6f5fc;
+  color: #4734b3;
+}
+.loanstatus-edit:hover {
+  background: #4734b3;
+  color: #fff;
+}
+.loanstatus-delete {
+  background: #fff5d2;
+  color: #c8a200;
+}
+.loanstatus-delete:hover {
+  background: #c8a200;
+  color: #fff;
+}
+.loanstatus-input,
+.loanstatus-select {
+  padding: 0.3em 0.5em;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  outline: none;
+  font-size: 0.98em;
+  margin-right: 0.4em;
+}
+.loanstatus-progress-cell {
+  background: #faf7f4;
+  padding: 0 !important;
+}
+.loanstatus-progress-collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s;
+  &.open {
+    max-height: 300px;
+    padding: 1em 0;
+  }
+}
+.loanstatus-progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #edeafd;
+  border-radius: 6px;
+  margin: 0.4em 0 0.7em 0;
+  position: relative;
+  .loanstatus-progress-bar-inner {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #d67a49 80%, #e2f8e3 100%);
+    transition: width 0.4s;
+  }
+}
+.loanstatus-empty {
+  padding: 2.5rem 0;
+  color: #999;
+  font-size: 1.1rem;
+  background: #fff;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .loanstatus-table-wrap {
+    padding: 1rem 0.2rem;
+  }
+  .loanstatus-container {
+    padding: 1rem 0.2rem;
+  }
+  .loanstatus-table th,
+  .loanstatus-table td {
+    padding: 0.55rem 0.2rem;
+  }
+}
+@media (max-width: 600px) {
+  .loanstatus-table-wrap {
+    padding: 0.5rem 0.1rem;
+  }
+  .loanstatus-table th,
+  .loanstatus-table td {
+    font-size: 0.92rem;
+  }
+}
