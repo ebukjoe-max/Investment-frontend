@@ -43,7 +43,10 @@ export default function GeneralSetting () {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const token = localStorage.getItem('authToken')
+        let token = null
+        if (typeof window !== 'undefined') {
+          token = localStorage.getItem('authToken')
+        }
 
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/admin/settings`,
@@ -83,7 +86,10 @@ export default function GeneralSetting () {
     //(settings)
     setLoading(true)
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/settings`,

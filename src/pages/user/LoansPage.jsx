@@ -12,7 +12,10 @@ export default function LoansPage () {
   useEffect(() => {
     const fetchUserId = async () => {
       const userId = await getVerifiedUserId()
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       axios
         .get(
           `${process.env.NEXT_PUBLIC_API_URL}/loans/getLoanHistory/${userId}`,

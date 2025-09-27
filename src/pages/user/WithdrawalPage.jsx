@@ -29,7 +29,10 @@ export default function WithdrawPage () {
     const fetchUserId = async () => {
       const userId = await getVerifiedUserId()
       setUserId(userId)
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       setToken(token)
 
       if (userId) {

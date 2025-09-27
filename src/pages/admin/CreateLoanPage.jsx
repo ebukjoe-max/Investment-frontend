@@ -41,7 +41,10 @@ export default function CreateLoanPage () {
 
   const handleSubmit = async () => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/loans/create`,
         form,

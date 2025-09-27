@@ -18,7 +18,10 @@ export default function UserTable () {
 
   const getUser = async () => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
         headers: {
@@ -38,7 +41,10 @@ export default function UserTable () {
   const openUserModal = async userId => {
     console.log('open modal')
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`,
         {
@@ -67,7 +73,10 @@ export default function UserTable () {
   // update user info
   const handleUserUpdate = async () => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const res = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/user/${walletUserId}`,
@@ -93,7 +102,10 @@ export default function UserTable () {
     if (!amount || isNaN(amount)) return
 
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       const res = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/wallet/${walletId}`,
         { amount, action },

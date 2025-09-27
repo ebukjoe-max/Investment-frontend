@@ -34,7 +34,10 @@ export default function AdminDeposits () {
     type: 'success'
   })
 
-  const token = localStorage.getItem('authToken')
+  let token = null
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('authToken')
+  }
   const fetchDeposits = async () => {
     try {
       const res = await axios.get(

@@ -36,7 +36,10 @@ export default function LoanStatusPage () {
 
   // Delete loan
   const handleDelete = async id => {
-    const token = localStorage.getItem('authToken')
+    let token = null
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('authToken')
+    }
 
     await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/loans/${id}`, {
       headers: {
@@ -49,7 +52,10 @@ export default function LoanStatusPage () {
   // Approve loan: set status, add to collateral wallet
   const handleApprove = async loan => {
     // 1. Set loan status to Approved
-    const token = localStorage.getItem('authToken')
+    let token = null
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('authToken')
+    }
 
     await axios.patch(
       `${process.env.NEXT_PUBLIC_API_URL}/loans/${loan._id}`,
@@ -108,7 +114,10 @@ export default function LoanStatusPage () {
     setEditData(prev => ({ ...prev, [name]: value }))
   }
   const handleEditSave = async loan => {
-    const token = localStorage.getItem('authToken')
+    let token = null
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('authToken')
+    }
 
     await axios.patch(
       `${process.env.NEXT_PUBLIC_API_URL}/loans/${loan._id}`,

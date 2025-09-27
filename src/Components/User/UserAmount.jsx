@@ -56,7 +56,10 @@ export default function UserAmount () {
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = await getVerifiedUserId()
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       try {
         const res = await axios.get(
@@ -131,7 +134,10 @@ export default function UserAmount () {
       if (!isConfirmed || !txData?.hash) return
 
       try {
-        const token = localStorage.getItem('authToken')
+        let token = null
+        if (typeof window !== 'undefined') {
+          token = localStorage.getItem('authToken')
+        }
 
         await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/transactions/deposit`,

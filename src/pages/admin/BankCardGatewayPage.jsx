@@ -35,7 +35,10 @@ export default function CardGatewaySetupPage () {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('authToken')
+        let token = null
+        if (typeof window !== 'undefined') {
+          token = localStorage.getItem('authToken')
+        }
 
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/admin/bankgateways
@@ -64,7 +67,10 @@ export default function CardGatewaySetupPage () {
   // ✅ Toggle active state
   const handleToggle = async (id, index) => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const updated = {
         ...gateways[index],
@@ -96,7 +102,10 @@ export default function CardGatewaySetupPage () {
     }
 
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/bankgateways

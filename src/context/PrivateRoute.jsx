@@ -11,7 +11,10 @@ const PrivateRoute = ({ children }) => {
 
   const checkAuth = async url => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       if (!token) {
         router.replace('/auth/Login')
         return

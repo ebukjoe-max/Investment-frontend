@@ -48,7 +48,10 @@ const ActivePlanPage = () => {
   const fetchInvestments = async () => {
     try {
       const userId = await getVerifiedUserId()
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       setToken(token)
 
       const res = await axios.get(

@@ -83,7 +83,10 @@ export default function BuyCoinPage () {
   const handleConfirm = async () => {
     setProcessing(true)
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       if (paymentMethod === 'Stripe') {
         const res = await axios.post(

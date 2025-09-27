@@ -39,7 +39,10 @@ export default function DepositPage () {
     const fetchUser = async () => {
       const userId = await getVerifiedUserId()
       setUserId(userId)
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       setToken(token)
       try {
         const res = await axios.get(

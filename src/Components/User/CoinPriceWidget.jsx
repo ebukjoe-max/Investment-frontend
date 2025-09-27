@@ -83,7 +83,10 @@ export default function CoinPriceWidget () {
   useEffect(() => {
     const fetchWallets = async () => {
       const userId = await getVerifiedUserId()
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       try {
         const res = await axios.get(

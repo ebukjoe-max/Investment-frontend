@@ -25,7 +25,10 @@ export default function ActiveInvestors () {
   useEffect(() => {
     const fetchInvestments = async () => {
       try {
-        const token = localStorage.getItem('authToken')
+        let token = null
+        if (typeof window !== 'undefined') {
+          token = localStorage.getItem('authToken')
+        }
 
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/investments/all/investments`,

@@ -22,7 +22,10 @@ export default function InvestmentProcess () {
   useEffect(() => {
     async function fetchPlans () {
       try {
-        const token = localStorage.getItem('authToken')
+        let token = null
+        if (typeof window !== 'undefined') {
+          token = localStorage.getItem('authToken')
+        }
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/investments/`,
           {
@@ -49,7 +52,10 @@ export default function InvestmentProcess () {
     async function fetchWallets () {
       const uid = await getVerifiedUserId()
       setUserId(uid)
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       try {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/user/${uid}`,
@@ -107,7 +113,10 @@ export default function InvestmentProcess () {
       return toast.error('Insufficient wallet balance')
     setLoading(true)
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       const payload = {
         userId,
         planId: selectedPlan._id,

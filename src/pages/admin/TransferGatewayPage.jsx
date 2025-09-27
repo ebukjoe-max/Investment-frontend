@@ -29,7 +29,10 @@ export default function TransferConfigPage () {
 
   // fetch existing configs
   useEffect(() => {
-    const token = localStorage.getItem('authToken')
+    let token = null
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('authToken')
+    }
 
     axios
       .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/getBantTransferdetails`, {
@@ -48,7 +51,10 @@ export default function TransferConfigPage () {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const { data } = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/updateBankTransferdetails

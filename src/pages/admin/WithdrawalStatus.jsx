@@ -28,7 +28,10 @@ export default function WithdrawalStatus () {
   const [selectedUser, setSelectedUser] = useState(null)
   const [open, setOpen] = useState(false)
 
-  const token = localStorage.getItem('authToken')
+  let token = null
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('authToken')
+  }
   // Fetch withdrawals from backend
   useEffect(() => {
     axios

@@ -44,7 +44,10 @@ export default function CreateBuyCoinPage () {
     if (form.name && form.symbol && form.rate) {
       setLoading(true)
       try {
-        const token = localStorage.getItem('authToken')
+        let token = null
+        if (typeof window !== 'undefined') {
+          token = localStorage.getItem('authToken')
+        }
 
         const res = await axios.post(
           `/${process.env.NEXT_PUBLIC_API_URL}/admin/create-coin`,

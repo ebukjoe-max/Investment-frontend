@@ -394,7 +394,10 @@ export default function KycPage () {
   const fetchUserKyc = async () => {
     const id = await getVerifiedUserId()
     setUserId(id)
-    const token = localStorage.getItem('authToken')
+    let token = null
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('authToken')
+    }
     setToken(token)
 
     try {

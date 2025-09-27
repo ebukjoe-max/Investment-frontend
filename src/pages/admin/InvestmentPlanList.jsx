@@ -25,7 +25,10 @@ export default function InvestmentPlanList () {
   const [loading, setLoading] = useState(true)
   const [editOpen, setEditOpen] = useState(false)
   const [currentPlan, setCurrentPlan] = useState(null)
-  const token = localStorage.getItem('authToken')
+  let token = null
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('authToken')
+  }
 
   // Fetch investment plans
   const fetchPlans = async () => {

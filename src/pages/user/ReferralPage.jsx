@@ -15,7 +15,10 @@ export default function ReferralPage () {
   useEffect(() => {
     const fetchReferrals = async () => {
       const userId = await getVerifiedUserId()
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       try {
         // 1. Get user and refCode

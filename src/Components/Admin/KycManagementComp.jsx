@@ -10,7 +10,10 @@ export default function KYCDashboard () {
 
   useEffect(() => {
     const fetchKycUsers = async () => {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       try {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/user/kyc/all/all`,
@@ -30,7 +33,10 @@ export default function KYCDashboard () {
   }, [])
 
   const handleDecision = async (userId, decision) => {
-    const token = localStorage.getItem('authToken')
+    let token = null
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('authToken')
+    }
 
     try {
       await axios.post(

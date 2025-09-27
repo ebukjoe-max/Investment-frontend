@@ -46,7 +46,10 @@ export default function LoanListPage () {
   // ✅ Delete loan
   const handleDelete = async id => {
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/loans/${id}`, {
         headers: {

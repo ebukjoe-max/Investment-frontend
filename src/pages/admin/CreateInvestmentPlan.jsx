@@ -58,7 +58,10 @@ export default function CreateInvestmentPlan () {
   const handleSubmit = async () => {
     //(plan)
     try {
-      const token = localStorage.getItem('authToken')
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/investments/create-plan`,
