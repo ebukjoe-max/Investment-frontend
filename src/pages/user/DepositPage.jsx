@@ -1,13 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Copy } from 'lucide-react'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 import { uploadToCloudinary } from '../../context/uploadToCloudinary'
 import { getVerifiedUserId } from '../../context/UnHashedUserId'
-
-// Stripe
 import { loadStripe } from '@stripe/stripe-js'
 import {
   Elements,
@@ -16,10 +13,8 @@ import {
   useElements
 } from '@stripe/react-stripe-js'
 
-// Load stripe with your public key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
-// Custom form styles for CardElement
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
@@ -31,33 +26,58 @@ const CARD_ELEMENT_OPTIONS = {
   }
 }
 
-/** ✅ Stripe Payment Form */
+// =======================
+// Stripe Card Payment Form
+// =======================
 function CardPaymentForm ({
   amount,
   userId,
   token,
+  selectedWallet,
+  selectedSymbol,
+  coinRate,
   setSnackbar,
-  setIsSubmitting
+  setIsSubmitting,
+  onSuccess
 }) {
   const stripe = useStripe()
   const elements = useElements()
+  const [loading, setLoading] = useState(false)
 
   const handleCardPayment = async () => {
-    if (!stripe || !elements) return
+    if (!stripe || !elements || loading) return
+    if (!amount || parseFloat(amount) <= 0) {
+      setSnackbar({
+        open: true,
+        message: 'Enter a valid amount',
+        severity: 'error'
+      })
+      return
+    }
 
     try {
+      setLoading(true)
       setIsSubmitting(true)
 
-      // Step 1: create PaymentIntent
+      // 1. Ask backend to create PaymentIntent
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/create-payment-intent`,
-        { userId, amount: parseFloat(amount), currency: 'usd', method: 'card' },
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${process.env.NEXT_PUBLIC_API_URL}/transactions/create-payment-intent`,
+        {
+          userId,
+          walletId: selectedWallet,
+          walletsymbol: selectedSymbol,
+          amount: parseFloat(amount),
+          coinRate,
+          convertedAmount: parseFloat(amount) / coinRate,
+          method: 'card'
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
       )
-
       const { clientSecret } = res.data
 
-      // Step 2: confirm card payment
+      // 2. Confirm card payment
       const card = elements.getElement(CardElement)
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card }
@@ -68,11 +88,30 @@ function CardPaymentForm ({
       }
 
       if (result.paymentIntent.status === 'succeeded') {
+        // 3. Register deposit in your system (receipt: Stripe paymentIntent.id)
+        const payload = {
+          userId,
+          walletId: selectedWallet,
+          walletsymbol: selectedSymbol,
+          method: 'card',
+          amount: parseFloat(amount),
+          coinRate,
+          convertedAmount: parseFloat(amount) / coinRate,
+          receipt: result.paymentIntent.id
+        }
+
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/transactions/deposit`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+
         setSnackbar({
           open: true,
-          message: 'Card payment successful! ✅',
+          message: 'Card payment successful! ✅ Deposit pending approval.',
           severity: 'success'
         })
+        if (onSuccess) onSuccess()
       }
     } catch (err) {
       console.error('Card payment failed:', err)
@@ -82,56 +121,55 @@ function CardPaymentForm ({
         severity: 'error'
       })
     } finally {
+      setLoading(false)
       setIsSubmitting(false)
     }
   }
 
   return (
     <div className='card-payment-box'>
-      <CardElement options={CARD_ELEMENT_OPTIONS} />
+      <div style={{ marginBottom: '1rem' }}>
+        <CardElement options={CARD_ELEMENT_OPTIONS} />
+      </div>
       <button
         className='deposit-btn'
         onClick={handleCardPayment}
-        disabled={!stripe}
+        disabled={!stripe || loading}
       >
-        Pay ${amount} with Card
+        {loading ? 'Processing...' : `Pay $${amount} with Card`}
       </button>
     </div>
   )
 }
 
-/** ✅ Deposit Page */
+// =======================
+// Main Deposit Content
+// =======================
 function DepositPageContent () {
-  const [user, setUser] = useState(null)
   const [userId, setUserId] = useState(null)
   const [token, setToken] = useState(null)
   const [wallets, setWallets] = useState([])
   const [selectedWallet, setSelectedWallet] = useState('')
+  const [selectedSymbol, setSelectedSymbol] = useState('')
   const [method, setMethod] = useState('crypto')
   const [amount, setAmount] = useState('')
   const [coinRate, setCoinRate] = useState(1)
   const [convertedAmount, setConvertedAmount] = useState(0)
-  const [selectedSymbol, setSelectedSymbol] = useState('')
   const [receipt, setReceipt] = useState(null)
-  const [isConfirming, setIsConfirming] = useState(false)
+  const [isConfirmed, setIsConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Snackbar
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
   })
-  const handleSnackbarClose = () =>
-    setSnackbar(prev => ({ ...prev, open: false }))
 
-  /** ✅ Fetch user and wallets */
+  // Fetch user and wallets
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const id = await getVerifiedUserId()
         setUserId(id)
-
         const localToken =
           typeof window !== 'undefined'
             ? localStorage.getItem('authToken')
@@ -144,8 +182,6 @@ function DepositPageContent () {
           `${process.env.NEXT_PUBLIC_API_URL}/user/${id}`,
           { headers: { Authorization: `Bearer ${localToken}` } }
         )
-
-        setUser(res.data.user)
         setWallets(res.data.wallets || [])
       } catch (err) {
         console.error('Error fetching user:', err)
@@ -154,15 +190,13 @@ function DepositPageContent () {
     fetchUser()
   }, [])
 
-  /** ✅ Fetch coin rate */
+  // Fetch live coin rate
   useEffect(() => {
     const fetchRate = async () => {
       if (!selectedWallet) return
       const wallet = wallets.find(w => w._id === selectedWallet)
       if (!wallet) return
-
       setSelectedSymbol(wallet.symbol)
-
       try {
         const res = await axios.get(
           `https://api.coingecko.com/api/v3/simple/price?ids=${wallet.symbol.toLowerCase()}&vs_currencies=usd`
@@ -175,7 +209,7 @@ function DepositPageContent () {
     fetchRate()
   }, [selectedWallet, wallets])
 
-  /** ✅ Update converted amount */
+  // Update converted amount
   useEffect(() => {
     if (!amount || isNaN(amount)) {
       setConvertedAmount(0)
@@ -185,7 +219,7 @@ function DepositPageContent () {
     }
   }, [amount, coinRate])
 
-  /** ✅ Upload file */
+  // Upload receipt
   const handleFileUpload = async () => {
     if (!receipt) return null
     try {
@@ -200,9 +234,18 @@ function DepositPageContent () {
     }
   }
 
-  /** ✅ Handle deposit for non-card methods */
+  // Handle deposit for non-card methods
   const handleDeposit = async () => {
-    if (method === 'card') return // handled by Stripe form
+    if (method === 'card') return // handled separately
+
+    if (!isConfirmed) {
+      setSnackbar({
+        open: true,
+        message: 'Please confirm your payment details before proceeding.',
+        severity: 'error'
+      })
+      return
+    }
 
     if (!receipt) {
       setSnackbar({
@@ -231,7 +274,7 @@ function DepositPageContent () {
     try {
       const payload = {
         userId,
-        walletSymbol: selectedSymbol,
+        walletsymbol: selectedSymbol,
         walletId: selectedWallet,
         method,
         amount: parseFloat(amount),
@@ -253,12 +296,14 @@ function DepositPageContent () {
       })
       setAmount('')
       setReceipt(null)
-      setIsConfirming(false)
+      setIsConfirmed(false)
     } catch (err) {
       console.error(err)
       setSnackbar({
         open: true,
-        message: 'Failed to create deposit. Try again later.',
+        message:
+          err?.response?.data?.message ||
+          'Failed to create deposit. Try again later.',
         severity: 'error'
       })
     } finally {
@@ -266,31 +311,7 @@ function DepositPageContent () {
     }
   }
 
-  /** ✅ Copy helper */
-  const copyToClipboard = async (text, type = 'wallet') => {
-    try {
-      await navigator.clipboard.writeText(text)
-      if (type === 'wallet') {
-        setIsConfirming(true)
-        setSnackbar({
-          open: true,
-          message:
-            'Wallet address copied. Please make payment and upload receipt.',
-          severity: 'info'
-        })
-      } else {
-        setSnackbar({
-          open: true,
-          message: 'Copied successfully.',
-          severity: 'success'
-        })
-      }
-    } catch (err) {
-      console.error('Copy failed:', err)
-    }
-  }
-
-  /** ✅ Render instructions */
+  // Render payment instructions for each method
   const renderInstructions = () => {
     const wallet = wallets.find(w => w._id === selectedWallet)
     const shorten = a =>
@@ -304,13 +325,18 @@ function DepositPageContent () {
               <p className='label'>Send {wallet.symbol} to:</p>
               <div className='copy-box'>
                 <span>{shorten(wallet.walletAddress)}</span>
-                <Copy
-                  onClick={() => copyToClipboard(wallet.walletAddress)}
-                  size={18}
-                />
               </div>
             </div>
           )
+        )
+      case 'bank':
+        return (
+          <div className='instruction-card'>
+            <p className='label'>Bank Transfer Details:</p>
+            <p>Bank: Example Bank</p>
+            <span>Acc No: 2006448310</span>
+            <p>Name: thurderXTorm Ltd</p>
+          </div>
         )
       case 'cashapp':
         return (
@@ -345,10 +371,20 @@ function DepositPageContent () {
     }
   }
 
+  // Reset all fields after success
+  const resetAll = () => {
+    setAmount('')
+    setReceipt(null)
+    setIsConfirmed(false)
+  }
+
+  // Snackbar close
+  const handleSnackbarClose = () =>
+    setSnackbar(prev => ({ ...prev, open: false }))
+
   return (
     <div className='page'>
       <div className='deposit-container'>
-        {/* Sponsor bar */}
         <div className='sponsor-bar'>
           <p>
             ⚡ Deposits processed securely by <b>ThunderXTorm</b>
@@ -410,18 +446,22 @@ function DepositPageContent () {
         {/* Instructions */}
         {renderInstructions()}
 
-        {/* Card form if selected */}
+        {/* Card form */}
         {method === 'card' && (
           <CardPaymentForm
             amount={amount}
             userId={userId}
             token={token}
+            selectedWallet={selectedWallet}
+            selectedSymbol={selectedSymbol}
+            coinRate={coinRate}
             setSnackbar={setSnackbar}
             setIsSubmitting={setIsSubmitting}
+            onSuccess={resetAll}
           />
         )}
 
-        {/* Upload receipt for crypto/etc */}
+        {/* Upload receipt for non-card */}
         {method !== 'card' && (
           <div className='form-group'>
             <label>Upload Receipt</label>
@@ -436,20 +476,25 @@ function DepositPageContent () {
           </div>
         )}
 
+        {/* Confirm button */}
+        {method !== 'card' && !isConfirmed && (
+          <button
+            className='deposit-btn'
+            onClick={() => setIsConfirmed(true)}
+            disabled={!amount || !receipt}
+          >
+            Confirm Payment Details
+          </button>
+        )}
+
         {/* Submit button */}
-        {method !== 'card' && (
+        {method !== 'card' && isConfirmed && (
           <button
             className='deposit-btn'
             onClick={handleDeposit}
-            disabled={!isConfirming || !receipt || isSubmitting}
+            disabled={isSubmitting}
           >
-            {isSubmitting
-              ? 'Submitting...'
-              : !isConfirming
-              ? 'Copy Deposit details to Proceed'
-              : receipt
-              ? 'Submit Deposit'
-              : 'Awaiting Receipt...'}
+            {isSubmitting ? 'Submitting...' : 'Submit Deposit'}
           </button>
         )}
       </div>
@@ -473,7 +518,9 @@ function DepositPageContent () {
   )
 }
 
-/** ✅ Wrap with Elements */
+// =======================
+// Main Export with Stripe Elements wrapper
+// =======================
 export default function DepositPage () {
   return (
     <Elements stripe={stripePromise}>
