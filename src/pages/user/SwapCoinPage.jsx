@@ -1,19 +1,8 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import {
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  MenuItem,
-  Button,
-  CircularProgress
-} from '@mui/material'
 import { getVerifiedUserId } from '../../context/UnHashedUserId'
+import SwapVertIcon from '@mui/icons-material/SwapVert'
 
-// ✅ Map wallet symbols to CoinGecko IDs
 const symbolToId = {
   BTC: 'bitcoin',
   ETH: 'ethereum',
@@ -31,8 +20,8 @@ export default function SwapCoinPage () {
   const [wallets, setWallets] = useState([])
   const [coinRates, setCoinRates] = useState({})
   const [availableCoins, setAvailableCoins] = useState([])
-  const [fromCoin, setFromCoin] = useState('BTC')
-  const [toCoin, setToCoin] = useState('USDT')
+  const [fromCoin, setFromCoin] = useState('USDT')
+  const [toCoin, setToCoin] = useState('SOL')
   const [amount, setAmount] = useState('')
   const [receiveAmount, setReceiveAmount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -41,7 +30,6 @@ export default function SwapCoinPage () {
   const token =
     typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
 
-  // ✅ Fetch wallets and live rates
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,44 +38,27 @@ export default function SwapCoinPage () {
           window.location.href = '/auth/Login'
           return
         }
-
-        // Get user wallets
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         )
-
         const userWallets = res.data.wallets || []
         setWallets(userWallets)
-
-        // Extract only supported coins
         const walletSymbols = userWallets
           .map(w => w.symbol.toUpperCase())
           .filter(s => symbolToId[s])
-
         setAvailableCoins(walletSymbols)
-
         if (walletSymbols.length > 0) {
-          // Fetch rates from CoinGecko
           const ids = walletSymbols.map(s => symbolToId[s]).join(',')
           const coinRes = await axios.get(
             `https://api.coingecko.com/api/v3/simple/price`,
-            {
-              params: {
-                ids,
-                vs_currencies: 'usd'
-              }
-            }
+            { params: { ids, vs_currencies: 'usd' } }
           )
-
           const rates = {}
           walletSymbols.forEach(symbol => {
             const id = symbolToId[symbol]
             rates[symbol] = coinRes.data[id]?.usd || 0
           })
-
           setCoinRates(rates)
         }
       } catch (err) {
@@ -96,67 +67,40 @@ export default function SwapCoinPage () {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [token])
 
-  // ✅ Auto calculate receive amount
   useEffect(() => {
-    const fromRate = coinRates[fromCoin] // 1 fromCoin = ? USD
-    const toRate = coinRates[toCoin] // 1 toCoin = ? USD
-
+    const fromRate = coinRates[fromCoin]
+    const toRate = coinRates[toCoin]
     if (fromRate && toRate && amount && fromCoin !== toCoin) {
-      const usdAmount = parseFloat(amount) // amount is already in USD
-      const fromCoinAmount = usdAmount / fromRate
+      const usdAmount = parseFloat(amount)
       const toCoinAmount = usdAmount / toRate
-
       setReceiveAmount(toCoinAmount)
     } else {
       setReceiveAmount(0)
     }
   }, [amount, fromCoin, toCoin, coinRates])
 
-  // ✅ Swap handler
   const handleSwap = async () => {
     const usdAmount = parseFloat(amount)
     if (!usdAmount || usdAmount <= 0) return alert('Enter a valid USD amount')
     if (fromCoin === toCoin) return alert('Cannot swap the same coin')
-
     const fromWallet = wallets.find(w => w.symbol === fromCoin)
     if (!fromWallet || usdAmount > fromWallet.balance)
       return alert('Insufficient balance in USD')
-
     try {
       setSwapping(true)
       const userId = await getVerifiedUserId()
-
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/transactions/swap`,
-        {
-          userId,
-          fromCoin,
-          toCoin,
-          amount: usdAmount, // ✅ send amount in USD
-          receiveAmount // already in target coin units
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        { userId, fromCoin, toCoin, amount: usdAmount, receiveAmount },
+        { headers: { Authorization: `Bearer ${token}` } }
       )
-
-      alert(
-        `✅ Swapped $${usdAmount} (${(usdAmount / coinRates[fromCoin]).toFixed(
-          6
-        )} ${fromCoin}) 
-      to ${receiveAmount.toFixed(6)} ${toCoin}`
-      )
-
-      // Refresh wallets
+      alert(`✅ Swapped $${usdAmount} from ${fromCoin} to ${toCoin}`)
       const updated = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       setWallets(updated.data.wallets)
       setAmount('')
@@ -168,99 +112,126 @@ export default function SwapCoinPage () {
     }
   }
 
-  const getBalance = symbol => {
-    return wallets.find(w => w.symbol === symbol)?.balance || 0
+  const getBalance = symbol =>
+    wallets.find(w => w.symbol === symbol)?.balance || 0
+  const handleSetMax = () => setAmount(getBalance(fromCoin).toString())
+  const handleSwitchCoins = () => {
+    setFromCoin(toCoin)
+    setToCoin(fromCoin)
+    setAmount('')
+    setReceiveAmount(0)
   }
 
   if (loading) {
     return (
-      <Box
-        className='swappedCoinpage'
-        display='flex'
-        justifyContent='center'
-        p={5}
-      >
-        <CircularProgress />
-      </Box>
+      <div className='swap-page__loader'>
+        <div className='spinner'></div>
+      </div>
     )
   }
 
   return (
-    <Box className='swappedCoinpage'>
-      <Paper className='swapBox' sx={{ p: 3 }}>
-        <Typography variant='h6' gutterBottom>
-          Coin Swap
-        </Typography>
+    <div className='swap-page'>
+      <div className='swap-account-row'>
+        <span className='swap-account-label'>Account</span>
+        <span className='swap-account-value'>Funding Account ▼</span>
+      </div>
 
-        <TextField
-          select
-          label='From'
-          value={fromCoin}
-          onChange={e => setFromCoin(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        >
-          {availableCoins.map(symbol => (
-            <MenuItem key={symbol} value={symbol}>
-              {symbol} - Balance: {getBalance(symbol)} | Rate: $
-              {coinRates[symbol] ?? '...'}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        <TextField
-          select
-          label='To'
-          value={toCoin}
-          onChange={e => setToCoin(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        >
-          {availableCoins.map(symbol => (
-            <MenuItem key={symbol} value={symbol}>
-              {symbol} - Rate: ${coinRates[symbol] ?? '...'}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        <TextField
-          label='Amount in USD'
+      <div className='swap-card'>
+        <div className='swap-card__row'>
+          <div className='swap-card__icon'>
+            <img
+              src={`/coins/${fromCoin}.svg`}
+              alt={fromCoin}
+              onError={e => (e.target.style.display = 'none')}
+            />
+          </div>
+          <select value={fromCoin} onChange={e => setFromCoin(e.target.value)}>
+            {availableCoins.map(symbol => (
+              <option key={symbol} value={symbol}>
+                {symbol}
+              </option>
+            ))}
+          </select>
+          <div className='swap-card__right'>
+            <span className='swap-card__balance'>
+              Available balance {getBalance(fromCoin)}
+            </span>
+            <button className='swap-card__max' onClick={handleSetMax}>
+              Max
+            </button>
+          </div>
+        </div>
+        <input
+          className='swap-card__amount'
           type='number'
           value={amount}
           onChange={e => setAmount(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
+          placeholder='0.00'
         />
+      </div>
 
-        <Typography variant='body2' sx={{ mb: 1 }}>
-          Your {fromCoin} balance (in USD): ${getBalance(fromCoin)}
-        </Typography>
+      <div className='swap-icon-wrap' onClick={handleSwitchCoins}>
+        <div className='swap-icon'>
+          <SwapVertIcon fontSize='large' />
+        </div>
+      </div>
 
-        <Typography variant='body2' sx={{ mb: 1 }}>
-          Equivalent in {fromCoin}:{' '}
-          <strong>
-            {(parseFloat(amount || 0) / coinRates[fromCoin]).toFixed(6)}{' '}
-            {fromCoin}
-          </strong>
-        </Typography>
+      <div className='swap-card'>
+        <div className='swap-card__row'>
+          <div className='swap-card__icon'>
+            <img
+              src={`/coins/${toCoin}.svg`}
+              alt={toCoin}
+              onError={e => (e.target.style.display = 'none')}
+            />
+          </div>
+          <select value={toCoin} onChange={e => setToCoin(e.target.value)}>
+            {availableCoins.map(symbol => (
+              <option key={symbol} value={symbol}>
+                {symbol}
+              </option>
+            ))}
+          </select>
+        </div>
+        <input
+          className='swap-card__amount'
+          disabled
+          value={receiveAmount > 0 ? receiveAmount.toFixed(8) : ''}
+          placeholder='0.00'
+        />
+      </div>
 
-        <Typography variant='body2' sx={{ mb: 2 }}>
-          You will receive:{' '}
-          <strong>
-            {receiveAmount.toFixed(6)} {toCoin}
-          </strong>
-        </Typography>
+      <div className='swap-rates'>
+        1 {fromCoin} ≈{' '}
+        {coinRates[fromCoin] && coinRates[toCoin]
+          ? (coinRates[fromCoin] / coinRates[toCoin]).toFixed(8)
+          : '--'}{' '}
+        {toCoin}
+      </div>
 
-        <Button
-          variant='contained'
-          color='primary'
-          fullWidth
-          onClick={handleSwap}
-          disabled={!amount || fromCoin === toCoin || swapping}
-        >
-          {swapping ? 'Swapping...' : 'Swap Coin'}
-        </Button>
-      </Paper>
-    </Box>
+      <div className='swap-details-row'>
+        <span>Fee</span>
+        <span className='swap-fee'>0 fee</span>
+      </div>
+      <div className='swap-details-row'>
+        <span>Receive</span>
+        <span className='swap-receive'>
+          {receiveAmount > 0 ? receiveAmount.toFixed(8) : '0.00'} {toCoin}
+        </span>
+      </div>
+
+      <div className='swap-oneclick'>
+        One-Click Buy <span className='swap-oneclick__arrow'>&rarr;</span>
+      </div>
+
+      <button
+        className='swap-quote-btn'
+        onClick={handleSwap}
+        disabled={!amount || fromCoin === toCoin || swapping}
+      >
+        {swapping ? 'Swapping...' : 'Quote'}
+      </button>
+    </div>
   )
 }
