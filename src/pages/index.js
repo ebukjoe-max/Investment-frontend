@@ -1,9 +1,10 @@
 import React from 'react'
+import HeroSection from '../Components/Home/HeroSection'
 
 export default function index () {
   return (
     <div>
-      <h1>welcome to Thurderxtorm finance</h1>
+      <HeroSection />
     </div>
   )
 }
