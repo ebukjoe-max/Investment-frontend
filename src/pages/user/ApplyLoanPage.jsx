@@ -5,25 +5,16 @@ import axios from 'axios'
 import { uploadToCloudinary } from '../../context/uploadToCloudinary'
 import { getVerifiedUserId } from '../../context/UnHashedUserId'
 import { toast } from 'react-toastify'
+import { Button } from '@mui/material'
 
-// (Optional) simple popup component retained
 const Popup = ({ message, type, onClose }) => (
-  <div className='fixed inset-0 flex items-center justify-center bg-black/50 z-50'>
-    <div
-      className={`p-6 rounded-2xl shadow-lg text-center w-96 ${
-        type === 'success'
-          ? 'bg-green-100 text-green-800'
-          : 'bg-red-100 text-red-800'
-      }`}
-    >
-      <h3 className='text-lg font-bold mb-3'>
+  <div className='popup-overlay'>
+    <div className={`popup-box ${type}`}>
+      <div className='popup-title'>
         {type === 'success' ? '✅ Success' : '❌ Error'}
-      </h3>
-      <p className='mb-4'>{message}</p>
-      <button
-        onClick={onClose}
-        className='px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition'
-      >
+      </div>
+      <div className='popup-message'>{message}</div>
+      <button className='popup-close' onClick={onClose}>
         Close
       </button>
     </div>
@@ -42,6 +33,9 @@ export default function LoanApplicationPage () {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [popup, setPopup] = useState({ show: false, message: '', type: '' })
 
+  // For plan tab selection (first 3 loans as tabs)
+  const [activePlanTab, setActivePlanTab] = useState(0)
+
   useEffect(() => {
     const fetchWallets = async () => {
       try {
@@ -49,31 +43,20 @@ export default function LoanApplicationPage () {
         setUserId(uid)
         const tkn = localStorage.getItem('authToken')
         setToken(tkn)
-
         if (!uid || !tkn) return
 
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/user/${uid}`,
-          {
-            headers: { Authorization: `Bearer ${tkn}` }
-          }
+          { headers: { Authorization: `Bearer ${tkn}` } }
         )
-
-        if (res.data?.wallets) {
-          setWallets(res.data.wallets)
-        } else {
-          setWallets([])
-        }
+        setWallets(res.data?.wallets || [])
       } catch (err) {
-        console.error('Error fetching wallets:', err)
         toast.error('Failed to load wallets')
       }
     }
-
     fetchWallets()
   }, [])
 
-  // Fetch loan plans once we have token (safe check)
   useEffect(() => {
     if (!token) return
     axios
@@ -81,17 +64,19 @@ export default function LoanApplicationPage () {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => setLoans(res.data.data || []))
-      .catch(err => {
-        console.error('Failed to load loans:', err)
-      })
+      .catch(() => toast.error('Failed to load loans'))
   }, [token])
+
+  // Update form when tab plan selected
+  useEffect(() => {
+    if (loans[activePlanTab]) setSelectedLoanId(loans[activePlanTab]._id)
+  }, [activePlanTab, loans])
 
   const handleFileUpload = async () => {
     if (!proof) return null
     try {
       return await uploadToCloudinary(proof)
-    } catch (err) {
-      console.error('Upload failed:', err)
+    } catch {
       setPopup({
         show: true,
         message: 'Failed to upload document',
@@ -104,17 +89,14 @@ export default function LoanApplicationPage () {
   const handleSubmit = async e => {
     e.preventDefault()
     setIsSubmitting(true)
-
     try {
       const selectedWallet = wallets.find(w => w._id === selectedWalletId)
       const selectedLoan = loans.find(l => l._id === selectedLoanId)
-
       if (!selectedWallet || !selectedLoan) {
         toast.error('Please select a wallet and a loan plan')
         setIsSubmitting(false)
         return
       }
-
       if (
         loanAmount < selectedLoan.minAmount ||
         loanAmount > selectedLoan.maxAmount
@@ -125,21 +107,18 @@ export default function LoanApplicationPage () {
         setIsSubmitting(false)
         return
       }
-
       const maxLoan = selectedWallet.balance * 0.6
       if (loanAmount > maxLoan) {
         toast.error('Loan amount exceeds your eligible wallet collateral.')
         setIsSubmitting(false)
         return
       }
-
       const documentUrl = await handleFileUpload()
       if (!documentUrl) {
         toast.error('Please upload a valid document before submitting.')
         setIsSubmitting(false)
         return
       }
-
       const data = {
         userId,
         walletId: selectedWalletId,
@@ -149,169 +128,272 @@ export default function LoanApplicationPage () {
         documentUrl,
         coin: selectedWallet.symbol
       }
-
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/loans/applyforloan`,
         data,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
-
       toast.success('Loan application submitted successfully!')
-
-      // reset
       setLoanAmount('')
       setSelectedLoanId('')
       setSelectedWalletId('')
       setProof(null)
     } catch (err) {
-      console.error(err.response?.data || err)
       toast.error(err.response?.data?.message || 'Failed to apply for loan')
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  // Get current selected loan plan
+  const selectedLoan = loans.find(l => l._id === selectedLoanId)
+  // Compute summary
+  let summary = null
+  if (selectedLoan && loanAmount) {
+    const rate = selectedLoan.interestRate / 100
+    const amount = Number(loanAmount || 0)
+    const interest = amount * rate
+    const totalRepayment = amount + interest
+    let periods = 1
+    if (selectedLoan.repaymentFrequency === 'Weekly') {
+      periods =
+        selectedLoan.durationType === 'months'
+          ? selectedLoan.duration * 4
+          : Math.ceil(selectedLoan.duration / 7)
+    } else if (selectedLoan.repaymentFrequency === 'Bi-weekly') {
+      periods =
+        selectedLoan.durationType === 'months'
+          ? selectedLoan.duration * 2
+          : Math.ceil(selectedLoan.duration / 14)
+    } else if (selectedLoan.repaymentFrequency === 'Monthly') {
+      periods =
+        selectedLoan.durationType === 'months'
+          ? selectedLoan.duration
+          : selectedLoan.duration / 30
+    }
+    const installment = totalRepayment / (periods || 1)
+    summary = { amount, interest, totalRepayment, periods, installment }
+  }
+
   return (
-    <div className='page'>
-      <div className='deposit-container'>
-        {/* Sponsor bar (same as deposit) */}
-        <div className='sponsor-bar'>
-          <p>
-            ⚡ Loan Sponsored by <b>Binance</b>
-          </p>
-        </div>
-
-        <form className='deposit-form' onSubmit={handleSubmit}>
-          <div className='form-group'>
-            <label>Select Wallet</label>
-            <select
-              value={selectedWalletId}
-              onChange={e => setSelectedWalletId(e.target.value)}
-            >
-              <option value=''>-- Select Wallet --</option>
-              {wallets.map(wallet => (
-                <option key={wallet._id} value={wallet._id}>
-                  {wallet.symbol} - $
-                  {Number(wallet.balance || 0).toLocaleString()}
-                </option>
-              ))}
-            </select>
+    <div className='loanapp-root'>
+      <div className='loanapp-card'>
+        <div className='loanapp-form-column'>
+          <div className='loanapp-title'>Borrow</div>
+          {/* Plan tabs */}
+          <div className='loanapp-tabs'>
+            {loans.slice(0, 3).map((loan, idx) => (
+              <div
+                key={loan._id}
+                className={`loanapp-tab${
+                  activePlanTab === idx ? ' active' : ''
+                }`}
+                onClick={() => {
+                  setActivePlanTab(idx)
+                  setSelectedLoanId(loan._id)
+                }}
+              >
+                <div className='tab-term'>{loan.term || loan.name}</div>
+                <div className='tab-rate'>
+                  {loan.interestRate?.toFixed(2)}% Min
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div className='form-group'>
-            <label>Select Loan Plan</label>
-            <select
-              value={selectedLoanId}
-              onChange={e => setSelectedLoanId(e.target.value)}
-            >
-              <option value=''>-- Select Loan --</option>
-              {loans.map(loan => (
-                <option key={loan._id} value={loan._id}>
-                  {loan.name} ({loan.interestRate}% {loan.interestType})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className='form-group'>
-            <label>Loan Amount</label>
-            <input
-              type='number'
-              placeholder='Enter amount in USD'
-              value={loanAmount}
-              onChange={e => setLoanAmount(e.target.value)}
-            />
-          </div>
-
-          <div className='form-group'>
-            <label>Upload Verified ID (eg Passport)</label>
-            <div className='upload-box'>
-              <input
-                type='file'
-                accept='image/*,application/pdf'
-                onChange={e => setProof(e.target.files[0])}
-              />
-              {proof && <span className='file-name'>{proof.name}</span>}
+          <form className='loanapp-form' onSubmit={handleSubmit}>
+            <div className='loanapp-field-group'>
+              <label className='loanapp-label'>Loan amount</label>
+              <div className='loanapp-input-group'>
+                <input
+                  className='loanapp-input'
+                  type='number'
+                  placeholder={`Min. ${
+                    selectedLoan ? selectedLoan.minAmount : '1000'
+                  }`}
+                  value={loanAmount}
+                  onChange={e => setLoanAmount(e.target.value)}
+                  min={selectedLoan?.minAmount || 1}
+                  max={selectedLoan?.maxAmount}
+                />
+                <button
+                  type='button'
+                  className='loanapp-max-btn'
+                  onClick={() => {
+                    const maxLoan =
+                      wallets.find(w => w._id === selectedWalletId)?.balance *
+                      0.6
+                    if (maxLoan) setLoanAmount(Math.floor(maxLoan))
+                  }}
+                >
+                  Max
+                </button>
+                <select
+                  className='loanapp-selectcoin'
+                  value={selectedWalletId}
+                  onChange={e => setSelectedWalletId(e.target.value)}
+                >
+                  <option value=''>Select</option>
+                  {wallets.map(wallet => (
+                    <option key={wallet._id} value={wallet._id}>
+                      {wallet.symbol}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
-
-          {/* Loan Summary - uses deposit-style conversion box */}
-          {selectedLoanId && loanAmount && (
-            <div className='conversion-box'>
-              <h4>Loan Summary</h4>
-              {(() => {
-                const loan = loans.find(l => l._id === selectedLoanId)
-                if (!loan) return null
-
-                const rate = loan.interestRate / 100
-                const amount = Number(loanAmount || 0)
-                const interest = amount * rate
-                const totalRepayment = amount + interest
-
-                let periods = 1
-                if (loan.repaymentFrequency === 'Weekly') {
-                  periods =
-                    loan.durationType === 'months'
-                      ? loan.duration * 4
-                      : Math.ceil(loan.duration / 7)
-                } else if (loan.repaymentFrequency === 'Bi-weekly') {
-                  periods =
-                    loan.durationType === 'months'
-                      ? loan.duration * 2
-                      : Math.ceil(loan.duration / 14)
-                } else if (loan.repaymentFrequency === 'Monthly') {
-                  periods =
-                    loan.durationType === 'months'
-                      ? loan.duration
-                      : loan.duration / 30
-                }
-
-                const installment = totalRepayment / (periods || 1)
-
-                return (
-                  <div className='summary'>
-                    <p>
-                      <strong>Loan Amount:</strong> ${amount.toLocaleString()}
-                    </p>
-                    <p>
-                      <strong>Interest ({loan.interestRate}%):</strong> $
-                      {interest.toFixed(2)}
-                    </p>
-                    <p>
-                      <strong>Total Repayment:</strong> $
-                      {totalRepayment.toFixed(2)}
-                    </p>
-                    <p>
-                      <strong>Repayment Plan:</strong> {periods} payments of $
-                      {installment.toFixed(2)} each ({loan.repaymentFrequency})
-                    </p>
-                    <p>
-                      <strong>Duration:</strong> {loan.duration}{' '}
-                      {loan.durationType}
-                    </p>
-                  </div>
-                )
-              })()}
+            {/* Interest Rate (read only but styled) */}
+            <div className='loanapp-field-group'>
+              <label className='loanapp-label'>
+                Interest rate (customizable)
+              </label>
+              <div className='loanapp-input-group'>
+                <input
+                  className='loanapp-input loanapp-readonly'
+                  value={selectedLoan ? selectedLoan.interestRate : ''}
+                  readOnly
+                />
+                <span className='loanapp-input-suffix'>%</span>
+              </div>
             </div>
-          )}
-
-          <div className='form-group'>
-            <button
+            {/* Collateral */}
+            <div className='loanapp-field-group'>
+              <label className='loanapp-label'>Collateral amount</label>
+              <div className='loanapp-input-group'>
+                <select
+                  className='loanapp-select'
+                  value={selectedWalletId}
+                  onChange={e => setSelectedWalletId(e.target.value)}
+                >
+                  <option value=''>Add Collateral</option>
+                  {wallets.map(wallet => (
+                    <option key={wallet._id} value={wallet._id}>
+                      {wallet.symbol} - $
+                      {Number(wallet.balance).toLocaleString()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {/* Upload Proof */}
+            <div className='loanapp-field-group'>
+              <label className='loanapp-label'>
+                Upload Verified ID (eg Passport)
+              </label>
+              <div className='loanapp-input-group'>
+                <input
+                  className='loanapp-upload'
+                  type='file'
+                  accept='image/*,application/pdf'
+                  onChange={e => setProof(e.target.files[0])}
+                />
+                {proof && (
+                  <span className='loanapp-filename'>{proof.name}</span>
+                )}
+              </div>
+            </div>
+            {/* Repayment method */}
+            <div className='loanapp-field-group'>
+              <label className='loanapp-label'>Repayment method</label>
+              <div className='loanapp-repay-row'>
+                <button
+                  type='button'
+                  className='loanapp-btn loanapp-btn-active'
+                >
+                  Auto-Repay
+                </button>
+                <button type='button' className='loanapp-btn'>
+                  Convert to flexible rate
+                </button>
+              </div>
+            </div>
+            {/* TOS */}
+            <div className='loanapp-tos-row'>
+              <input type='checkbox' required id='loan-tos' />
+              <label htmlFor='loan-tos'>
+                I have read and agree to{' '}
+                <a href='#' className='loanapp-link'>
+                  Fixed Rate Loan Terms
+                </a>
+              </label>
+            </div>
+            <Button
               type='submit'
-              className={`deposit-btn ${
-                isSubmitting ? 'opacity-60 cursor-not-allowed' : ''
-              }`}
+              className={`loanapp-borrow-btn${isSubmitting ? ' loading' : ''}`}
               disabled={isSubmitting}
+              fullWidth
+              sx={{ mt: 2 }}
             >
-              {isSubmitting ? 'Submitting…' : 'Submit Application'}
-            </button>
+              {isSubmitting ? 'Submitting…' : 'Borrow'}
+            </Button>
+          </form>
+        </div>
+        {/* Right summary */}
+        <div className='loanapp-summary-column'>
+          <div className='loanapp-summary-card'>
+            <div className='loanapp-summary-title'>Summary</div>
+            <div className='loanapp-summary-row'>
+              <span>Remaining Limit</span>
+              <span>16,000,000 USDT | 100.00%</span>
+            </div>
+            <div className='loanapp-summary-row'>
+              <span>Est. Interest Amount</span>
+              <span>--</span>
+            </div>
+            <div className='loanapp-summary-row'>
+              <span>Market Avail | Pending</span>
+              <span>--</span>
+            </div>
+            <div className='loanapp-summary-row'>
+              <span>LTV After Borrowing</span>
+              <span>--</span>
+            </div>
+            <hr style={{ border: '1px solid #232323' }} />
+            <div className='loanapp-summary-section'>
+              <b>Summary</b>
+              {summary && (
+                <div style={{ marginTop: 6 }}>
+                  <div>
+                    Loan Amount: <b>${summary.amount.toLocaleString()}</b>
+                  </div>
+                  <div>
+                    Interest: <b>${summary.interest.toFixed(2)}</b>
+                  </div>
+                  <div>
+                    Total Repayment: <b>${summary.totalRepayment.toFixed(2)}</b>
+                  </div>
+                  <div>
+                    Installment: <b>${summary.installment.toFixed(2)}</b>{' '}
+                    <span style={{ color: '#aaa' }}>
+                      x {summary.periods} ({selectedLoan.repaymentFrequency})
+                    </span>
+                  </div>
+                  <div>
+                    Duration:{' '}
+                    <b>
+                      {selectedLoan.duration} {selectedLoan.durationType}
+                    </b>
+                  </div>
+                </div>
+              )}
+            </div>
+            <hr style={{ border: '1px solid #232323' }} />
+            <div className='loanapp-faq-section'>
+              <div className='loanapp-faq-title'>FAQ</div>
+              {[
+                'Can crypto loans be used for other strategies such as arbitrage?',
+                'How can crypto loans be used?',
+                'What is Crypto Loans?',
+                'Which rates apply to loans? How is interest calculated?',
+                'What happens if your loan is liquidated?'
+              ].map((q, idx) => (
+                <div key={q} className='loanapp-faq-q'>
+                  <span>{q}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </form>
+        </div>
       </div>
-
-      {/* popup (optional) */}
       {popup.show && (
         <Popup
           message={popup.message}
