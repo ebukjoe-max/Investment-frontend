@@ -223,9 +223,30 @@ export default function AdvancedCryptoHero () {
     return a.slice(0, 6) + '...' + a.slice(-4)
   }
 
+  // --- MOBILE NAV DROPDOWN ---
+  // This lets mobile nav be a dropdown, logo always visible
+  const MOBILE_NAV_LINKS = [
+    { label: 'Features', href: '#features' },
+    { label: 'Markets', href: '#markets' },
+    { label: 'Token', href: '#token' },
+    { label: 'Docs', href: '#docs' },
+    { label: 'Contact', href: '#contact' },
+    { label: 'Login', href: '#login' },
+    { label: 'Register', href: '#register' }
+  ]
+
   return (
     <div className='root'>
       {/* particles canvas */}
+      <video autoPlay loop muted playsInline className='bg-video'>
+        <source
+          src='https://cdn.pixabay.com/video/2025/06/27/288182_large.mp4'
+          type='video/mp4'
+        />
+      </video>
+
+      <div className='overlay'></div>
+
       <canvas ref={canvasRef} className='particles' aria-hidden />
 
       {/* header */}
@@ -235,6 +256,7 @@ export default function AdvancedCryptoHero () {
           <div className='tag'>Next-gen wallet & exchange</div>
         </div>
 
+        {/* Desktop nav (hidden on mobile) */}
         <nav className={`nav${menuOpen ? ' open' : ''}`} aria-label='Main'>
           <ul>
             <li>
@@ -250,7 +272,16 @@ export default function AdvancedCryptoHero () {
               <a href='#docs'>Docs</a>
             </li>
             <li>
+              <a href='#docs'>Trade Bot</a>
+            </li>
+            <li>
               <a href='#contact'>Contact</a>
+            </li>
+            <li>
+              <a href='#contact'>Login</a>
+            </li>
+            <li>
+              <a href='#contact'>Register</a>
             </li>
           </ul>
         </nav>
@@ -313,13 +344,13 @@ export default function AdvancedCryptoHero () {
             ) : (
               <div className='connectBtns'>
                 <button className='primary' onClick={connectWallet}>
-                  Connect Wallet
+                  Connect
                 </button>
                 <button
                   className='ghost'
                   onClick={() => window.open('/download', '_blank')}
                 >
-                  Download App
+                  Register
                 </button>
               </div>
             )}
@@ -327,24 +358,52 @@ export default function AdvancedCryptoHero () {
 
           <button
             aria-label='Toggle menu'
+            aria-expanded={menuOpen}
+            aria-controls='mobile-menu'
             className={`hamburger${menuOpen ? ' active' : ''}`}
             onClick={() => setMenuOpen(v => !v)}
+            tabIndex={0}
           >
             <span />
             <span />
             <span />
           </button>
         </div>
-
+        {/* Mobile nav dropdown */}
         <AnimatePresence>
           {menuOpen && (
-            <motion.div
-              className='mobileOverlay'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMenuOpen(false)}
-            />
+            <>
+              <motion.div
+                className='mobileOverlay'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMenuOpen(false)}
+              />
+              <motion.nav
+                id='mobile-menu'
+                className='mobileDropdown'
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.25 }}
+                aria-label='Mobile Main'
+              >
+                <ul>
+                  {MOBILE_NAV_LINKS.map(link => (
+                    <li key={link.href}>
+                      <a
+                        href={link.href}
+                        tabIndex={menuOpen ? 0 : -1}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </motion.nav>
+            </>
           )}
         </AnimatePresence>
       </header>
@@ -509,7 +568,7 @@ export default function AdvancedCryptoHero () {
               </div>
               <div className='footerActions'>
                 <button className='primary' onClick={connectWallet}>
-                  {connected ? 'Open Wallet' : 'Connect Wallet'}
+                  {connected ? 'Open Wallet' : 'Connect '}
                 </button>
                 <button
                   className='ghost'
@@ -522,7 +581,6 @@ export default function AdvancedCryptoHero () {
           </motion.div>
         </section>
       </main>
-
       {/* optional CTAs / footer micro */}
       <div className='microCTA'>
         <div>Built with privacy-first principals • Try the demo on testnet</div>

@@ -17,6 +17,27 @@
   overflow-x: hidden;
 }
 
+.bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  opacity: 0.6;
+  z-index: 1;
+}
+
 /* canvas particles */
 .particles {
   position: absolute;
@@ -196,6 +217,44 @@
   inset: 0;
   z-index: 45;
   background: rgba(0, 0, 0, 0.55);
+}
+
+/* mobile nav dropdown */
+.mobileDropdown {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-2);
+  z-index: 55;
+  padding: 92px 0 28px 0;
+  box-shadow: 0 4px 24px rgba(11, 18, 32, 0.7);
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      width: 100%;
+      text-align: center;
+      a {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.18rem;
+        text-decoration: none;
+        padding: 10px 36px;
+        display: inline-block;
+        width: 100%;
+        transition: color 0.18s;
+      }
+      a:hover {
+        color: var(--accent);
+      }
+    }
+  }
 }
 
 /* hero layout */
@@ -453,6 +512,10 @@
     gap: 8px;
     align-items: flex-start;
   }
+  /* mobile nav dropdown always visible logo (logoWrap stays at top) */
+  .mobileDropdown {
+    display: block;
+  }
 }
 @media (max-width: 520px) {
   .header {
@@ -473,5 +536,50 @@
   }
   .card {
     padding: 14px;
+  }
+}
+/* Add below your existing styles */
+
+@media (max-width: 1100px) {
+  .mobileDropdown {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-2);
+    z-index: 100;
+    padding-top: 82px; /* space for header/logo */
+    box-shadow: 0 4px 24px rgba(11, 18, 32, 0.7);
+    animation: fadeDown 0.22s;
+  }
+  .mobileDropdown ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mobileDropdown li a {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 12px 0;
+    display: block;
+    width: 100vw;
+    text-align: center;
+  }
+  @keyframes fadeDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
