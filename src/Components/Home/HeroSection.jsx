@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Menu } from 'lucide-react'
 
 const COINGECKO_URL =
   'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'
@@ -228,6 +229,9 @@ export default function AdvancedCryptoHero () {
   const MOBILE_NAV_LINKS = [
     { label: 'Features', href: '#features' },
     { label: 'Markets', href: '#markets' },
+    { label: 'investment', href: '#investment' },
+    { label: 'Loans', href: '#Loans' },
+    { label: 'Trading Bot', href: '#Trading Bot' },
     { label: 'Token', href: '#token' },
     { label: 'Docs', href: '#docs' },
     { label: 'Contact', href: '#contact' },
@@ -266,13 +270,19 @@ export default function AdvancedCryptoHero () {
               <a href='#markets'>Markets</a>
             </li>
             <li>
+              <a href='#Investment'>Investment</a>
+            </li>
+            <li>
+              <a href='#Loans'>Loans</a>
+            </li>
+            <li>
+              <a href='#Loans'>Trading Bot</a>
+            </li>
+            <li>
               <a href='#token'>Token</a>
             </li>
             <li>
               <a href='#docs'>Docs</a>
-            </li>
-            <li>
-              <a href='#docs'>Trade Bot</a>
             </li>
             <li>
               <a href='#contact'>Contact</a>
@@ -287,7 +297,7 @@ export default function AdvancedCryptoHero () {
         </nav>
 
         <div className='headerActions'>
-          <div className='priceChips' aria-hidden>
+          {/* <div className='priceChips' aria-hidden>
             <div className='priceChip'>
               <div className='priceLabel'>BTC</div>
               <div className='priceValue'>
@@ -326,7 +336,7 @@ export default function AdvancedCryptoHero () {
                 </small>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className='walletWrap'>
             {connected ? (
@@ -356,18 +366,10 @@ export default function AdvancedCryptoHero () {
             )}
           </div>
 
-          <button
-            aria-label='Toggle menu'
-            aria-expanded={menuOpen}
-            aria-controls='mobile-menu'
+          <Menu
             className={`hamburger${menuOpen ? ' active' : ''}`}
             onClick={() => setMenuOpen(v => !v)}
-            tabIndex={0}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+          />
         </div>
         {/* Mobile nav dropdown */}
         <AnimatePresence>
@@ -468,6 +470,34 @@ export default function AdvancedCryptoHero () {
               <div className='fIcon'>🌐</div>
               <div>
                 <div className='fTitle'>Cross-Chain</div>
+                <div className='fDesc'>Bridges with fraud proofs.</div>
+              </div>
+            </div>
+          </motion.div>
+          <motion.div
+            className='featureGrid'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className='feature'>
+              <div className='fIcon'>🔒</div>
+              <div>
+                <div className='fTitle'>Profitable Trading Bot</div>
+                <div className='fDesc'>Multi-sig & hardware support.</div>
+              </div>
+            </div>
+            <div className='feature'>
+              <div className='fIcon'>⚡</div>
+              <div>
+                <div className='fTitle'>Investment</div>
+                <div className='fDesc'>Layer-2 support & MEV protection.</div>
+              </div>
+            </div>
+            <div className='feature'>
+              <div className='fIcon'>🌐</div>
+              <div>
+                <div className='fTitle'>Crypto Loans</div>
                 <div className='fDesc'>Bridges with fraud proofs.</div>
               </div>
             </div>

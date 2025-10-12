@@ -225,34 +225,88 @@
   top: 0;
   left: 0;
   right: 0;
-  background: var(--bg-2);
+  background: rgba(15, 23, 36, 0.95); // subtle transparency
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
   z-index: 55;
-  padding: 92px 0 28px 0;
-  box-shadow: 0 4px 24px rgba(11, 18, 32, 0.7);
+  padding: 92px 0 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 6px 26px rgba(11, 18, 32, 0.8);
+  transform: translateY(-20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s ease;
+
+  &.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   ul {
     display: flex;
     flex-direction: column;
-    gap: 24px;
     align-items: center;
     list-style: none;
     margin: 0;
     padding: 0;
+    gap: 20px;
+
     li {
       width: 100%;
       text-align: center;
+
       a {
-        color: #fff;
-        font-weight: 700;
-        font-size: 1.18rem;
-        text-decoration: none;
-        padding: 10px 36px;
-        display: inline-block;
+        display: block;
         width: 100%;
-        transition: color 0.18s;
+        padding: 14px 36px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.3px;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        position: relative;
+
+        &:hover {
+          color: var(--accent);
+          background: rgba(255, 255, 255, 0.04);
+        }
+
+        &:active {
+          transform: scale(0.97);
+        }
       }
-      a:hover {
-        color: var(--accent);
-      }
+    }
+  }
+
+  // Optional: subtle fade-in animation for each link
+  li {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.4s forwards ease;
+  }
+
+  li:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  li:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+  li:nth-child(3) {
+    animation-delay: 0.26s;
+  }
+  li:nth-child(4) {
+    animation-delay: 0.34s;
+  }
+  li:nth-child(5) {
+    animation-delay: 0.42s;
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }
