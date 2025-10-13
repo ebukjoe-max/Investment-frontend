@@ -189,137 +189,66 @@ export default function Header () {
   // --- MOBILE NAV DROPDOWN ---
   // This lets mobile nav be a dropdown, logo always visible
   const MOBILE_NAV_LINKS = [
-    { label: 'Features', href: '#features' },
-    { label: 'Markets', href: '#markets' },
-    { label: 'investment', href: '#investment' },
-    { label: 'Loans', href: '#Loans' },
-    { label: 'Trading Bot', href: '#Trading Bot' },
-    { label: 'Token', href: '#token' },
-    { label: 'Docs', href: '#docs' },
-    { label: 'Contact', href: '#contact' },
-    { label: 'Login', href: '#login' },
-    { label: 'Register', href: '#register' }
+    { label: 'Features', href: '/features' },
+    { label: 'Markets', href: '/markets' },
+    { label: 'Investment', href: '/plans' },
+    { label: 'Loans', href: '/Loans' },
+    { label: 'Trading Bot', href: '/Trading Bot' },
+    { label: 'Token', href: '/token' },
+    { label: 'Docs', href: '/docs' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Login', href: '/login' },
+    { label: 'Register', href: '/register' }
   ]
 
   return (
     <div>
       {/* header */};
       <header className='header'>
-        <div className='logoWrap'>
-          <div className='logo'>Web3Co</div>
-          <div className='tag'>Next-gen wallet & exchange</div>
-        </div>
-
-        {/* Desktop nav (hidden on mobile) */}
-        <nav className={`nav${menuOpen ? ' open' : ''}`} aria-label='Main'>
-          <ul>
-            <li>
-              <a href='#features'>Features</a>
-            </li>
-            <li>
-              <a href='#markets'>Markets</a>
-            </li>
-            <li>
-              <a href='#Investment'>Investment</a>
-            </li>
-            <li>
-              <a href='#Loans'>Loans</a>
-            </li>
-            <li>
-              <a href='#Loans'>Trading Bot</a>
-            </li>
-            <li>
-              <a href='#token'>Token</a>
-            </li>
-            <li>
-              <a href='#docs'>Docs</a>
-            </li>
-            <li>
-              <a href='#contact'>Contact</a>
-            </li>
-            <li>
-              <a href='#contact'>Login</a>
-            </li>
-            <li>
-              <a href='#contact'>Register</a>
-            </li>
-          </ul>
-        </nav>
-
-        <div className='headerActions'>
-          {/* <div className='priceChips' aria-hidden>
-            <div className='priceChip'>
-              <div className='priceLabel'>BTC</div>
-              <div className='priceValue'>
-                <AnimatedNumber
-                  value={prices.btc?.usd ?? 0}
-                  decimals={0}
-                  prefix='$'
-                />
-                <small
-                  className='change'
-                  style={{
-                    color:
-                      (prices.btc?.change24h ?? 0) >= 0 ? '#16c784' : '#ff6b6b'
-                  }}
-                >
-                  {(prices.btc?.change24h ?? 0).toFixed(2)}%
-                </small>
-              </div>
-            </div>
-            <div className='priceChip'>
-              <div className='priceLabel'>ETH</div>
-              <div className='priceValue'>
-                <AnimatedNumber
-                  value={prices.eth?.usd ?? 0}
-                  decimals={0}
-                  prefix='$'
-                />
-                <small
-                  className='change'
-                  style={{
-                    color:
-                      (prices.eth?.change24h ?? 0) >= 0 ? '#16c784' : '#ff6b6b'
-                  }}
-                >
-                  {(prices.eth?.change24h ?? 0).toFixed(2)}%
-                </small>
-              </div>
-            </div>
-          </div> */}
-
-          <div className='walletWrap'>
-            {connected ? (
-              <div className='connected'>
-                <button
-                  className='smallBtn'
-                  onClick={() => window.navigator.clipboard?.writeText(account)}
-                >
-                  {shortAcct(account)}
-                </button>
-                <button className='ghost' onClick={disconnectWallet}>
-                  Disconnect
-                </button>
-              </div>
-            ) : (
-              <div className='connectBtns'>
-                <button className='primary' onClick={connectWallet}>
-                  Connect
-                </button>
-                <button
-                  className='ghost'
-                  onClick={() => window.open('/download', '_blank')}
-                >
-                  Register
-                </button>
-              </div>
-            )}
+        <div className='headerContent'>
+          <div className='logoWrap'>
+            <div className='logo'>Thunderxtorm</div>
+            <div className='tag'>Thurderxtorm wallet & exchange</div>
+          </div>
+          <div className='hamburger'>
+            <Menu onClick={() => setMenuOpen(v => !v)} />
           </div>
 
-          <Menu
-            className={`hamburger${menuOpen ? ' active' : ''}`}
-            onClick={() => setMenuOpen(v => !v)}
-          />
+          {/* Desktop nav (hidden on mobile) */}
+          <nav className={`nav${menuOpen ? ' open' : ''}`} aria-label='Main'>
+            <ul>
+              <li>
+                <a href='#features'>Features</a>
+              </li>
+              <li>
+                <a href='#markets'>Markets</a>
+              </li>
+              <li>
+                <a href='/plans'>Investment</a>
+              </li>
+              <li>
+                <a href='/Loans'>Loans</a>
+              </li>
+              <li>
+                <a href='/Trading Bot'>Trading Bot</a>
+              </li>
+              <li>
+                <a href='/token'>Token</a>
+              </li>
+              <li>
+                <a href='/docs'>Docs</a>
+              </li>
+              <li>
+                <a href='/contact'>Contact</a>
+              </li>
+              <li>
+                <a href='#contact'>Login</a>
+              </li>
+              <li>
+                <a href='#contact'>Register</a>
+              </li>
+            </ul>
+          </nav>
         </div>
         {/* Mobile nav dropdown */}
         <AnimatePresence>

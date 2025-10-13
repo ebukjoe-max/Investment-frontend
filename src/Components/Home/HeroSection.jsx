@@ -143,7 +143,7 @@ export default function AdvancedCryptoHero () {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.8 }}
           >
-            Next-Gen <span className='gradient'>Crypto Platform</span>
+            Thunderxtorm<span className='gradient'>Crypto Platform</span>
           </motion.h1>
           <motion.p
             className='lead'
