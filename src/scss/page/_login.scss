@@ -36,7 +36,11 @@
       margin: 0 1rem;
     }
   }
-
+  p {
+    color: #aaa;
+    margin-bottom: 1.5rem;
+    align-self: flex-start;
+  }
   .login__img {
     width: 80px;
     margin-bottom: 1rem;
@@ -71,6 +75,10 @@
     font-size: 0.95rem;
     background: #fafafa;
     transition: all 0.2s ease-in-out;
+
+    &::placeholder {
+      color: #aaa;
+    }
 
     &:focus {
       border-color: var(--text);
@@ -243,10 +251,6 @@
 .altLogin {
   text-align: center;
   margin-top: 1rem;
-
-  p {
-    margin-bottom: 0.5rem;
-  }
 
   .socialIcons {
     display: flex;

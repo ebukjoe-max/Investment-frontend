@@ -82,7 +82,7 @@
     // -webkit-text-fill-color: transparent;
   }
   .tag {
-    color: var(--muted);
+    color: #eee;
     font-size: 0.78rem;
     margin-top: -2px;
   }
@@ -98,8 +98,8 @@
     margin: 0;
     padding: 0;
     li {
-      color: var(--muted);
-      font-weight: 600;
+      color: #fff;
+      font-weight: 900;
       letter-spacing: 0.3px;
       a {
         color: inherit;
@@ -266,24 +266,39 @@
 .gradient {
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  // -webkit-text-fill-color: transparent;
+}
+.title {
+  color: #111;
+  text-align: left;
 }
 .lead {
-  color: var(--muted);
+  color: #cecece;
   margin-bottom: 18px;
-  font-size: 1.02rem;
+  line-height: 2;
+  font-size: 1.2rem;
+  font-weight: 500;
+
+  @media (max-width: 750px) {
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
 }
 
-.form {
+.earlyaccessform {
   display: flex;
   gap: 12px;
   margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 4px;
   input {
     flex: 1;
     padding: 14px 12px;
     border-radius: 10px;
     border: none;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(162, 162, 162, 0.03);
     color: #fff;
     outline: none;
     font-size: 0.98rem;
@@ -306,8 +321,13 @@
   margin-top: 14px;
 }
 .feature {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
   gap: 12px;
+  color: #000;
   align-items: center;
   background: rgba(255, 255, 255, 0.02);
   padding: 10px 12px;
@@ -332,7 +352,6 @@
     font-size: 0.94rem;
   }
   .fDesc {
-    color: var(--muted);
     font-size: 0.82rem;
     margin-top: 2px;
   }
@@ -345,15 +364,14 @@
 }
 .card {
   width: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(3, 9, 23, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.04);
+  color: #000 !important;
 }
 .cardHeader {
   display: flex;
@@ -365,7 +383,7 @@
     font-weight: 800;
   }
   .cardSub {
-    color: var(--muted);
+    color: #000;
     font-size: 0.85rem;
   }
   .cardKPI {
@@ -376,7 +394,7 @@
       font-weight: 800;
     }
     .kpiLabel {
-      color: var(--muted);
+      color: #000;
       font-size: 0.75rem;
     }
   }
@@ -427,7 +445,7 @@
     margin-top: 12px;
     gap: 12px;
     .sym {
-      color: var(--muted);
+      color: #000;
       font-size: 0.78rem;
     }
     .priceWrap {
@@ -451,7 +469,7 @@
   align-items: center;
   gap: 12px;
   .smallText {
-    color: var(--muted);
+    color: #000;
     font-size: 0.85rem;
   }
   .footerActions {
@@ -460,14 +478,23 @@
     align-items: center;
   }
 }
-
+.ghost,
+.primary {
+  border-radius: 5px;
+  padding: 0.4rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background-color: #000;
+}
 /* micro CTA */
 .microCTA {
   margin: 36px 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--muted);
+  color: #000;
   gap: 12px;
 }
 .link {
@@ -502,7 +529,7 @@
 }
 @media (max-width: 520px) {
   .header {
-    padding: 12px 14px;
+    padding: 1.5rem 14px;
     display: flex;
     margin: 0.5rem;
   }

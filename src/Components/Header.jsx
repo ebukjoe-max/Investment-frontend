@@ -12,8 +12,6 @@ export default function Header () {
   }, [menuOpen])
 
   const NAV_LINKS = [
-    { label: 'Features', href: '/features' },
-    { label: 'Markets', href: '/markets' },
     { label: 'Investment', href: '/plans' },
     { label: 'Loans', href: '/Loans' },
     { label: 'Trading Bot', href: '/Trading Bot' },
@@ -42,12 +40,12 @@ export default function Header () {
               </li>
             ))}
             <li>
-              <a href='/login' className='authBtn'>
+              <a href='/auth/Login' className='authBtn'>
                 Login
               </a>
             </li>
             <li>
-              <a href='/register' className='authBtn accent'>
+              <a href='/auth/RegistrationPage' className='authBtn accent'>
                 Register
               </a>
             </li>
@@ -90,10 +88,10 @@ export default function Header () {
                   </li>
                 ))}
                 <li>
-                  <a href='/login'>Login</a>
+                  <a href='/auth/Login'>Login</a>
                 </li>
                 <li>
-                  <a href='/register'>Register</a>
+                  <a href='/auth/RegistrationPage'>Register</a>
                 </li>
               </ul>
             </motion.nav>

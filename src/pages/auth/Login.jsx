@@ -81,14 +81,14 @@ export default function Login () {
 
       <ToastContainer />
       <div className='login__container'>
-        <Image
+        {/* <Image
           src='https://i.postimg.cc/NjS69Ysh/thurder-Xtorm-logo.png'
           alt='logo'
           className='login__img'
           width={50}
           height={50}
-        />
-        <h3 className='login__head'>Login</h3>
+        /> */}
+        <p>Login to your account</p>
 
         <form onSubmit={handleLogin} className='login__form'>
           <Input

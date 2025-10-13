@@ -208,10 +208,9 @@ export default function RegistrationPage () {
     <div className={'authWrapper'}>
       <ToastContainer />
       <div className={'formCard'}>
-        <h2>Sign Up</h2>
-        <p>Create an account with thurderXtorm</p>
-
         <form onSubmit={handleRegister} className={'form'}>
+          <p>Create an account</p>
+
           <div className={'formRow'}>
             <input
               type='text'

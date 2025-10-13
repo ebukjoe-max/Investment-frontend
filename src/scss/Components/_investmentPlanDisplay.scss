@@ -124,19 +124,24 @@
 
     .investBtn {
       width: 100%;
-      padding: 10px 0;
-      border: none;
-      border-radius: 12px;
-      background: var(--accent, #4f8cff);
-      color: #fff;
+      padding: 14px;
+      font-size: 1.05rem;
       font-weight: 600;
-      font-size: 1rem;
+      color: var(--text);
+      background: linear-gradient(135deg, #6f5fbf 0%, #d67a49 100%);
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.25s ease;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
 
-      &:hover {
-        opacity: 0.9;
-        transform: translateY(-2px);
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #5a48a0 0%, #b56039 100%);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
       }
     }
   }

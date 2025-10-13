@@ -4,22 +4,30 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../Header'
 
 const COINGECKO_URL =
-  'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true'
+  'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,cardano,binancecoin,xrp,dogecoin&vs_currencies=usd&include_24hr_change=true'
 
 function useLivePrices (intervalMs = 10000) {
   const [prices, setPrices] = useState({
     btc: null,
     eth: null,
+    sol: null,
+    ada: null,
+    bnb: null,
+    xrp: null,
+    doge: null,
     fetchedAt: null,
     error: null
   })
+
   useEffect(() => {
     let mounted = true
+
     async function fetchPrices () {
       try {
         const res = await fetch(COINGECKO_URL)
         const json = await res.json()
         if (!mounted) return
+
         setPrices({
           btc: {
             usd: json.bitcoin?.usd ?? null,
@@ -29,6 +37,26 @@ function useLivePrices (intervalMs = 10000) {
             usd: json.ethereum?.usd ?? null,
             change24h: json.ethereum?.usd_24h_change ?? null
           },
+          sol: {
+            usd: json.solana?.usd ?? null,
+            change24h: json.solana?.usd_24h_change ?? null
+          },
+          ada: {
+            usd: json.cardano?.usd ?? null,
+            change24h: json.cardano?.usd_24h_change ?? null
+          },
+          bnb: {
+            usd: json.binancecoin?.usd ?? null,
+            change24h: json.binancecoin?.usd_24h_change ?? null
+          },
+          xrp: {
+            usd: json.xrp?.usd ?? null,
+            change24h: json.xrp?.usd_24h_change ?? null
+          },
+          doge: {
+            usd: json.dogecoin?.usd ?? null,
+            change24h: json.dogecoin?.usd_24h_change ?? null
+          },
           fetchedAt: Date.now(),
           error: null
         })
@@ -37,6 +65,7 @@ function useLivePrices (intervalMs = 10000) {
         setPrices(prev => ({ ...prev, error: err.message }))
       }
     }
+
     fetchPrices()
     const t = setInterval(fetchPrices, intervalMs)
     return () => {
@@ -44,6 +73,7 @@ function useLivePrices (intervalMs = 10000) {
       clearInterval(t)
     }
   }, [intervalMs])
+
   return prices
 }
 
@@ -142,8 +172,11 @@ export default function AdvancedCryptoHero () {
             initial={{ y: 25, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.8 }}
+            className='title'
           >
-            Thunderxtorm<span className='gradient'>Crypto Platform</span>
+            Thunderxtorm
+            {/* <br /> */}
+            {/* <span className='gradient'>Crypto Platform</span> */}
           </motion.h1>
           <motion.p
             className='lead'
@@ -157,7 +190,7 @@ export default function AdvancedCryptoHero () {
           </motion.p>
 
           <motion.form
-            className='form'
+            className='earlyaccessform'
             onSubmit={e => e.preventDefault()}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -284,7 +317,9 @@ export default function AdvancedCryptoHero () {
                   </div>
                 </div>
                 <div>
-                  <button className='ghost'>Trade</button>
+                  <a href='/auth/Login' className='ghost'>
+                    Trade
+                  </a>
                 </div>
               </div>
 
@@ -312,7 +347,125 @@ export default function AdvancedCryptoHero () {
                   </div>
                 </div>
                 <div>
-                  <button className='ghost'>Trade</button>
+                  <a href='/auth/Login' className='ghost'>
+                    Trade
+                  </a>
+                </div>
+              </div>
+              <div className='marketRow'>
+                <div>
+                  <div className='sym'>SOL / USDT</div>
+                  <div className='priceWrap'>
+                    <AnimatedNumber
+                      value={prices.sol?.usd ?? 1700}
+                      decimals={0}
+                      prefix='$'
+                      className='priceBig'
+                    />
+                    <small
+                      className='pct'
+                      style={{
+                        color:
+                          (prices.sol?.change24h ?? 0) >= 0
+                            ? '#16c784'
+                            : '#ff6b6b'
+                      }}
+                    >
+                      {(prices.sol?.change24h ?? 0).toFixed(2)}%
+                    </small>
+                  </div>
+                </div>
+                <div>
+                  <a href='/auth/Login' className='ghost'>
+                    Trade
+                  </a>
+                </div>
+              </div>
+              <div className='marketRow'>
+                <div>
+                  <div className='sym'>ADA / USDT</div>
+                  <div className='priceWrap'>
+                    <AnimatedNumber
+                      value={prices.ada?.usd ?? 1700}
+                      decimals={0}
+                      prefix='$'
+                      className='priceBig'
+                    />
+                    <small
+                      className='pct'
+                      style={{
+                        color:
+                          (prices.ada?.change24h ?? 0) >= 0
+                            ? '#16c784'
+                            : '#ff6b6b'
+                      }}
+                    >
+                      {(prices.ada?.change24h ?? 0).toFixed(2)}%
+                    </small>
+                  </div>
+                </div>
+                <div>
+                  <a href='/auth/Login' className='ghost'>
+                    Trade
+                  </a>
+                </div>
+              </div>
+              <div className='marketRow'>
+                <div>
+                  <div className='sym'>BNB/ USDT</div>
+                  <div className='priceWrap'>
+                    <AnimatedNumber
+                      value={prices.bnb?.usd ?? 1700}
+                      decimals={0}
+                      prefix='$'
+                      className='priceBig'
+                    />
+                    <small
+                      className='pct'
+                      style={{
+                        color:
+                          (prices.bnb?.change24h ?? 0) >= 0
+                            ? '#16c784'
+                            : '#ff6b6b'
+                      }}
+                    >
+                      {(prices.bnb?.change24h ?? 0).toFixed(2)}%
+                    </small>
+                  </div>
+                </div>
+                <div>
+                  <a href='/auth/Login' className='ghost'>
+                    Trade
+                  </a>
+                </div>
+              </div>
+              <div className='marketRow'>
+                <div>
+                  <div className='sym'>THXM / USDT</div>
+                  <div className='priceWrap'>
+                    <AnimatedNumber
+                      value={prices.xrp?.usd ?? 1.05}
+                      decimals={0}
+                      prefix='$'
+                      className='priceBig'
+                    />
+                    <small
+                      className='pct'
+                      style={{
+                        color:
+                          (prices.xrp?.change24h ?? 0) >= 0
+                            ? '#16c784'
+                            : '#ff6b6b'
+                      }}
+                    >
+                      {(prices.doge?.change24h ?? 0).toFixed(2)}%
+                    </small>
+                  </div>
+                </div>
+                <div>
+                  <a href='/auth/Login' className='ghost'>
+                    Trade
+                  </a>
                 </div>
               </div>
             </div>
@@ -337,17 +490,6 @@ export default function AdvancedCryptoHero () {
         </section>
       </main>
       {/* optional CTAs / footer micro */}
-      <div className='microCTA'>
-        <div>Built with privacy-first principals • Try the demo on testnet</div>
-        <div>
-          <a href='/docs' className='link'>
-            Docs
-          </a>
-          <a href='/token' className='link'>
-            Token
-          </a>
-        </div>
-      </div>
     </div>
   )
 }
