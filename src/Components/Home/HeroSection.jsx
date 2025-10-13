@@ -250,7 +250,7 @@ export default function AdvancedCryptoHero () {
                   className='kpiNum'
                   prefix=''
                 />
-                <div className='kpiLabel'>Users helped</div>
+                <div className='kpiLabel'>Users</div>
               </div>
             </div>
 
