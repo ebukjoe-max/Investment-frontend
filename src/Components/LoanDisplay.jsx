@@ -11,7 +11,9 @@ export default function LoansDisplay () {
   useEffect(() => {
     const fetchLoans = async () => {
       try {
-        const res = await axios.get('http://172.20.10.2:5000/loans/all')
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/loans/all`
+        )
         const data = res.data?.data || []
         setLoans(data)
 

@@ -11,7 +11,9 @@ export default function InvestmentPlansDisplay () {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await axios.get('http://172.20.10.2:5000/investments')
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/investments`
+        )
         if (res.data.success) {
           setPlans(res.data.data)
           const uniqueCats = [
