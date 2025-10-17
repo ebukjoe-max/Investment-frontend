@@ -9,6 +9,7 @@ const withTM = require('next-transpile-modules')([
 const nextConfig = {
   output: 'export',
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
