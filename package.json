@@ -22,7 +22,7 @@
     "@netlify/next": "^1.4.9",
     "@rainbow-me/rainbowkit": "^2.2.8",
     "@stripe/react-stripe-js": "^5.0.0",
-    "@stripe/stripe-js": "^7.9.0",
+    "@stripe/stripe-js": "^8.1.0",
     "@tanstack/query-core": "^5.87.1",
     "@tanstack/react-query": "^5.87.1",
     "@web3modal/ethereum": "^2.7.1",
