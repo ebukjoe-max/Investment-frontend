@@ -174,7 +174,7 @@ export default function AdvancedCryptoHero () {
             transition={{ delay: 0.1, duration: 0.8 }}
             className='title'
           >
-            Thunderxtorm
+            Solnance
             {/* <br /> */}
             {/* <span className='gradient'>Crypto Platform</span> */}
           </motion.h1>

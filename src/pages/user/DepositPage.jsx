@@ -387,7 +387,7 @@ function DepositPageContent () {
       <div className='deposit-container'>
         <div className='sponsor-bar'>
           <p>
-            ⚡ Deposits processed securely by <b>ThunderXTorm</b>
+            ⚡ Deposits processed securely by <b>Solnance</b>
           </p>
         </div>
 

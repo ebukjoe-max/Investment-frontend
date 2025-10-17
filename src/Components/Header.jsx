@@ -25,7 +25,7 @@ export default function Header () {
       {/* Logo */}
       <div>
         <a href='/' className='logoWrap'>
-          <div className='logo'>Thunderxtorm</div>
+          <div className='logo'>Solnance</div>
           <div className='tag'>Wallet & Exchange</div>
         </a>
       </div>

@@ -108,7 +108,7 @@ export default function WithdrawPage () {
         {/* Sponsor bar (same as DepositPage) */}
         <div className='sponsor-bar'>
           <p>
-            ⚡ Withdrawals processed securely by <b>ThunderXTorm</b>
+            ⚡ Withdrawals processed securely by <b>Solnance</b>
           </p>
         </div>
 
