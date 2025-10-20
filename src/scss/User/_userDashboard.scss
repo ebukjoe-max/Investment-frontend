@@ -50,11 +50,13 @@
   max-height: 80px;
   .logo-section {
     display: flex;
+
     .brand-name {
-      width: 200px;
-      height: 100px;
+      width: 150px;
+      height: 150px;
       transition: color 0.3s;
-      margin-left: -30px;
+      margin-left: 30px;
+      color: var(--text);
     }
   }
   .header-actions {

@@ -248,11 +248,14 @@ export default function MainHeader () {
 
       <header className='dashboard-header'>
         <div className='logo-section'>
-          <img
-            src='https://i.postimg.cc/PxxryJqc/thurder-Xtorm-logo-removebg-preview.png'
+          <Link href='/user/UserDashboard'>
+            <span className='brand-name'>Solnance</span>
+          </Link>
+          {/* <img
+            src='https://i.postimg.cc/V6f00jhs/Crypt-Logo-Retina.webp'
             alt='company logo'
             className='brand-name'
-          />
+          /> */}
         </div>
         <div className='header-actions'>
           <>

@@ -77,7 +77,7 @@ export default function Index () {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link
           rel='icon'
-          href='https://i.postimg.cc/PxxryJqc/thurder-Xtorm-logo-removebg-preview.png'
+          href='https://i.postimg.cc/V6f00jhs/Crypt-Logo-Retina.webp'
         />
       </Head>
 

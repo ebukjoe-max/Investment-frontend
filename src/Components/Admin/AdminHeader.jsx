@@ -295,7 +295,7 @@ export default function AdminHeader () {
       <header className='dashboard-header'>
         <div className='logo-section'>
           <img
-            src='https://i.postimg.cc/PxxryJqc/thurder-Xtorm-logo-removebg-preview.png'
+            src='https://i.postimg.cc/V6f00jhs/Crypt-Logo-Retina.webp'
             alt='company logo'
             className='brand-name'
           />
