@@ -335,28 +335,28 @@ function DepositPageContent () {
             <p className='label'>Bank Transfer Details:</p>
             <p>Bank: Example Bank</p>
             <span>Acc No: 2006448310</span>
-            <p>Name: thurderXTorm Ltd</p>
+            <p>Name: Solnance Ltd</p>
           </div>
         )
       case 'cashapp':
         return (
           <div className='instruction-card'>
             <p className='label'>CashApp Tag:</p>
-            <span>$thurderXTorm</span>
+            <span>$Solnance</span>
           </div>
         )
       case 'googlepay':
         return (
           <div className='instruction-card'>
             <p className='label'>Google Pay ID:</p>
-            <span>thurderxtorm@bank.com</span>
+            <span>Solnance@bank.com</span>
           </div>
         )
       case 'applepay':
         return (
           <div className='instruction-card'>
             <p className='label'>Apple Pay ID:</p>
-            <span>thurderxtorm@icloud.com</span>
+            <span>Solnance@icloud.com</span>
           </div>
         )
       case 'card':

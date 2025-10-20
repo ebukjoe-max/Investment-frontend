@@ -72,8 +72,8 @@ export default function Index () {
     <div className='login'>
       {/* Site Head */}
       <Head>
-        <title>Login | thurderXtorm</title>
-        <meta name='description' content='Login to your thurderXtorm account' />
+        <title>Login | Solnance</title>
+        <meta name='description' content='Login to your Solnance account' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link
           rel='icon'
@@ -84,7 +84,7 @@ export default function Index () {
       <ToastContainer />
       <div className='login__container'>
         <Image
-          src='https://i.postimg.cc/NjS69Ysh/thurder-Xtorm-logo.png'
+          src='https://i.postimg.cc/V6f00jhs/Crypt-Logo-Retina.webp'
           alt='logo'
           className='login__img'
           width={50}

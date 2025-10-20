@@ -101,10 +101,10 @@ export default function ForgotPasswordPage () {
   return (
     <div className='login'>
       <Head>
-        <title>Forgot Password | thurderXtorm</title>
+        <title>Forgot Password | Solnance</title>
         <meta
           name='description'
-          content='Forgot your thurderXtorm account password?'
+          content='Forgot your Solnance account password?'
         />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link
@@ -116,7 +116,7 @@ export default function ForgotPasswordPage () {
       <ToastContainer />
       <div className='login__container'>
         <Image
-          src='https://i.postimg.cc/NjS69Ysh/thurder-Xtorm-logo.png'
+          src='https://i.postimg.cc/V6f00jhs/Crypt-Logo-Retina.webp'
           alt='logo'
           className='login__img'
           width={50}

@@ -47,10 +47,9 @@ export default function ChatBot () {
                 className='chat-logo'
               />
               <div>
-                <strong>ThurderXtorm Ai.</strong>
+                <strong>Solnance Ai.</strong>
                 <p className='status'>
-                  <span className='green-dot' /> Ask me anything about
-                  Thurderxtorm.
+                  <span className='green-dot' /> Ask me anything about Solnance.
                 </p>
               </div>
             </div>
@@ -96,7 +95,7 @@ export default function ChatBot () {
       ) : (
         <button className='chat-toggle' onClick={() => setOpen(true)}>
           💬
-          <span>Ask ThurderXtorm Ai</span>
+          <span>Ask Solnance Ai</span>
         </button>
       )}
     </div>

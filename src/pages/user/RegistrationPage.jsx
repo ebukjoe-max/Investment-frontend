@@ -170,7 +170,7 @@ export default function RegistrationPage () {
       <ToastContainer />
       <div className={'formCard'}>
         <h2>Sign Up</h2>
-        <p>Create an account with thurderXtorm</p>
+        <p>Create an account with Solnance</p>
 
         <form onSubmit={handleRegister} className={'form'}>
           <div className={'formRow'}>

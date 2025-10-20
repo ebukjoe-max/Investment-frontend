@@ -3,7 +3,7 @@ import axios from 'axios'
 export async function uploadToCloudinary (file) {
   const data = new FormData()
   data.append('file', file)
-  data.append('upload_preset', 'thurderxtorm')
+  data.append('upload_preset', 'Solnance')
   data.append('folder', 'receipts')
 
   try {

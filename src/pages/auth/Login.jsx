@@ -70,8 +70,8 @@ export default function Login () {
     <div className='login'>
       {/* Site Head */}
       <Head>
-        <title>Login | thurderXtorm</title>
-        <meta name='description' content='Login to your thurderXtorm account' />
+        <title>Login | Solnance</title>
+        <meta name='description' content='Login to your Solnance account' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link
           rel='icon'

@@ -13,7 +13,7 @@ const botKnowledge = [
       'greetings'
     ],
     answer:
-      'Hello 👋, welcome to THURDERXTORM FINANCE! I’m your assistant. You can ask me anything about deposits, withdrawals, loans, investment plans, or even trading. How can I make your day easier today?'
+      'Hello 👋, welcome to Solnance FINANCE! I’m your assistant. You can ask me anything about deposits, withdrawals, loans, investment plans, or even trading. How can I make your day easier today?'
   },
   {
     keywords: [
@@ -217,7 +217,7 @@ const botKnowledge = [
   {
     keywords: ['bye', 'goodbye', 'see you', 'later', 'talk soon'],
     answer:
-      'Goodbye 👋, and thanks for chatting with THURDERXTORM FINANCE! Wishing you profitable investments ahead. Come back anytime you need me.'
+      'Goodbye 👋, and thanks for chatting with Solnance FINANCE! Wishing you profitable investments ahead. Come back anytime you need me.'
   }
 ]
 

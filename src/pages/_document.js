@@ -10,7 +10,7 @@ class MyDocument extends Document {
           <meta name='theme-color' content='#000000' />
           <meta
             name='description'
-            content='ThurderXtorm Investment,Loan and savings company.'
+            content='Solnance Investment,Loan and savings company.'
           />
 
           {/* Favicon */}
