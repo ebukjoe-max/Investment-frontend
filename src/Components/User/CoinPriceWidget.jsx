@@ -42,7 +42,7 @@ function DepositModal ({ isOpen, onClose, onSubmit, selectedCoin, prices }) {
         </button>
         <h3>Deposit {selectedCoin.symbol}</h3>
         <label>
-          Amount ({selectedCoin.symbol})
+          Amount Of ({selectedCoin.symbol})
           <input
             type='number'
             step='any'
@@ -55,7 +55,7 @@ function DepositModal ({ isOpen, onClose, onSubmit, selectedCoin, prices }) {
         </label>
         {selectedCoin && prices[selectedCoin.symbol] && (
           <div className='converted'>
-            ≈ $
+            Total(USDT) ≈ $
             {(
               parseFloat(amount) * prices[selectedCoin.symbol] || 0
             ).toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
@@ -144,12 +144,15 @@ export default function CoinPriceWidget () {
       method: 'crypto',
       amount: amount * (prices[selectedCoin.symbol] || 0),
       coinRate: prices[selectedCoin.symbol] || 0,
-      convertedAmount: amount,
+      convertedAmount: amount * (prices[selectedCoin.symbol] || 0),
       walletsymbol: selectedCoin.symbol,
       receipt: 'deposit_init'
     }
-
     try {
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/transactions/deposit`,
         payload,

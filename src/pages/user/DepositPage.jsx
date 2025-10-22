@@ -58,6 +58,10 @@ function CardPaymentForm ({
     try {
       setLoading(true)
       setIsSubmitting(true)
+      let token = null
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('authToken')
+      }
 
       // 1. Ask backend to create PaymentIntent
       const res = await axios.post(

@@ -36,7 +36,7 @@ export default function UserDashboard () {
 
   return (
     <div className='dashboard-container'>
-      {notif && (
+      {/* {notif && (
         <Snackbar
           open={open}
           onClose={() => setOpen(false)}
@@ -47,7 +47,7 @@ export default function UserDashboard () {
             <strong>{notif.title}</strong> — {notif.message}
           </Alert>
         </Snackbar>
-      )}
+      )} */}
 
       {/* <UserNotificationPopup
           message='Welcome back!'
