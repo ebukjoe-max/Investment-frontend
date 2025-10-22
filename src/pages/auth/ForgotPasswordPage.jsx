@@ -21,17 +21,9 @@ export default function ForgotPasswordPage () {
 
     setLoading(true)
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`,
-        {
-          email: email.trim().toLowerCase()
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`, {
+        email: email.trim().toLowerCase()
+      })
       toast.success('OTP Sent! Check your email.')
       setStep(2)
     } catch (err) {
@@ -47,18 +39,10 @@ export default function ForgotPasswordPage () {
 
     setLoading(true)
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`,
-        {
-          email: email.toLowerCase(),
-          otp
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`, {
+        email: email.toLowerCase(),
+        otp
+      })
       toast.success('OTP Verified! Set new password')
       setStep(3)
     } catch (err) {
@@ -80,11 +64,6 @@ export default function ForgotPasswordPage () {
         {
           email: email.toLowerCase(),
           newPassword
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
         }
       )
       toast.success('Password updated successfully!')
